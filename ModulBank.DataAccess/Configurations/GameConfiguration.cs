@@ -14,13 +14,13 @@ public class GameConfiguration : IEntityTypeConfiguration<GameEntity>
             .IsRowVersion();
             
         builder.HasOne(x => x.Player1)
-            .WithOne()
-            .HasForeignKey<PlayerEntity>(x => x.GameId)
+            .WithMany()
+            .HasForeignKey("Player1Id")
             .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasOne(x => x.Player2)
-            .WithOne()
-            .HasForeignKey<PlayerEntity>(x => x.GameId)
+            .WithMany()
+            .HasForeignKey("Player2Id")
             .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasOne(x => x.CurrentPlayer)

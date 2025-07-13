@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using ModulBank.DataAccess;
 
 namespace ModulBank
 {
@@ -14,7 +15,18 @@ namespace ModulBank
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+            services.AddDbContext<GameDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(GameDbContext)));
+            });
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -13,8 +13,12 @@ public class GameEntity
     public DateTime? LastMoveAt { get; set; }
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
+    public Guid? Player1Id { get; set; }
     public PlayerEntity? Player1 { get; set; }
+    
+    public Guid? Player2Id { get; set; }
     public PlayerEntity? Player2 { get; set; }
+    
     public Guid? CurrentPlayerId { get; set; }
     public PlayerEntity? CurrentPlayer { get; set; }
     

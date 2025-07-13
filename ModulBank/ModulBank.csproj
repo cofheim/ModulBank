@@ -32,4 +32,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ModulBank.DataAccess\ModulBank.DataAccess.csproj" />
+    <ProjectReference Include="..\ModulBank.Domain\ModulBank.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
