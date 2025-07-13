@@ -1,48 +1,41 @@
 using Microsoft.EntityFrameworkCore;
+using ModulBank.Application.Interfaces;
+using ModulBank.Application.Services;
 using ModulBank.DataAccess;
+using ModulBank.DataAccess.Repositories;
 
-namespace ModulBank
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// настройка PostgreSQL
+builder.Services.AddDbContext<GameDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// регистрация репозиториев
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+
+// регистрация сервисов
+builder.Services.AddScoped<IGameService, GameService>();
+
+var app = builder.Build();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+// проверка на существование БД
+using (var scope = app.Services.CreateScope())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-            var services = builder.Services;
-
-            // Add services to the container.
-            services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
-
-            services.AddDbContext<GameDbContext>(options =>
-            {
-                options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(GameDbContext)));
-            });
-
-            var app = builder.Build();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
-                dbContext.Database.Migrate();
-            }
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+    var dbContext = scope.ServiceProvider.GetRequiredService<GameDbContext>();
+    dbContext.Database.EnsureCreated();
 }
+
+app.Run();
